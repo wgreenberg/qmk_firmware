@@ -83,7 +83,7 @@ enum my_keycodes {
   PKC_GESTURE,
   PKC_DRAG_SCROLL,
   PKC_ADJUST_LED_BRIGHTNESS,
-  PKC_MOUSE_HOLD,
+  PKC_TOGGLE_MOUSE_HOLD,
   PKC_BLINKY_DPI_CONFIG
 };
 
@@ -176,7 +176,7 @@ const uint16_t PROGMEM pointing_device_gestures[NUM_GESTURE_DIRECTIONS] =
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Base layer with all of the mouse-related stuff for everyday use.
     [LAYER_NAV_RIGHT_HANDED] = LAYOUT(  MS_BTN1, MS_BTN4, MS_BTN5, MS_BTN2,
-                                        PKC_MOUSE_HOLD, MS_BTN3,
+                                        PKC_TOGGLE_MOUSE_HOLD, MS_BTN3,
                                         PKC_GESTURE, TG(LAYER_CONTROL) ),
     // Mirror-image of right-handed layout for lefties.
     [LAYER_NAV_LEFT_HANDED] = LAYOUT(   MS_BTN2, PKC_DRAG_SCROLL, MS_BTN4, MS_BTN5,
@@ -312,20 +312,20 @@ void keyboard_post_init_user(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
-        case PKC_MOUSE_HOLD:
+        case PKC_TOGGLE_MOUSE_HOLD:
             if (record->event.pressed) {
                 if (IS_MOUSE_HELD) {
                     dprintf("releasing mouse.\n");
                     SEND_STRING(SS_UP(X_MS_BTN1));
-                    rgblight_set_layer_state(CONTROL_LAYER_COLOUR, true);
-                    rgblight_set_layer_state(RIGHTY_NAV_LAYER_COLOUR, false);
+                    rgblight_set_layer_state(CONTROL_LAYER_COLOUR, false);
+                    rgblight_set_layer_state(RIGHTY_NAV_LAYER_COLOUR, true);
                     rgblight_set_layer_state(LEFTY_NAV_LAYER_COLOUR, false);
                 } else {
                     dprintf("pressing mouse.\n");
                     SEND_STRING(SS_DOWN(X_MS_BTN1));
-                    rgblight_set_layer_state(CONTROL_LAYER_COLOUR, false);
-                    rgblight_set_layer_state(RIGHTY_NAV_LAYER_COLOUR, true);
-                    rgblight_set_layer_state(LEFTY_NAV_LAYER_COLOUR, true);
+                    rgblight_set_layer_state(CONTROL_LAYER_COLOUR, true);
+                    rgblight_set_layer_state(RIGHTY_NAV_LAYER_COLOUR, false);
+                    rgblight_set_layer_state(LEFTY_NAV_LAYER_COLOUR, false);
                 }
                 IS_MOUSE_HELD = !IS_MOUSE_HELD;
             }
